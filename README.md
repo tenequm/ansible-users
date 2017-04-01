@@ -1,5 +1,6 @@
 ansible-users
 =========
+[![Build Status](https://travis-ci.org/1nfinitum/ansible-users.svg?branch=master)](https://travis-ci.org/1nfinitum/ansible-users)
 
 A brief description of the role goes here.
 
