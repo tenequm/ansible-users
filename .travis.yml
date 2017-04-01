@@ -20,14 +20,14 @@ install:
 
 script:
   # Basic role syntax check
-  - ansible-playbook tests/test.yml -i localhost --syntax-check
+  - ansible-playbook tests/test.yml --syntax-check
 
   # Running test.yml
-  - ansible-playbook -i localhost --connection=local --sudo tests/test.yml
+  - ansible-playbook --connection=local --sudo tests/test.yml
 
   # Running role again to ensure its idempotence.
   - >
-    ansible-playbook -i localhost --connection=local --sudo tests/test.yml
+    ansible-playbook --connection=local --sudo tests/test.yml
     | grep -q 'changed=0.*failed=0'
     && (echo 'Idempotence test: pass' && exit 0)
     || (echo 'Idempotence test: fail' && exit 1)
