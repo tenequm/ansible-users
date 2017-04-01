@@ -1,0 +1,28 @@
+---
+- name: Adding groups.
+  group: 
+    name: "{{ item.name }}"
+    state: present
+  with_items:
+    - "{{ users }}"
+
+- name: Adding users.
+  user: 
+    name: "{{ item.name }}"
+    state: "{{ item.state | default('present') }}"
+    createhome: "{{ item.createhome | default('yes') }}"
+    shell: "{{ item.shell | default('/bin/bash') }}"
+    group: "{{ item.name }}"
+    password: "{{ item.password | default(omit) }}"
+  with_items:
+    - "{{ users }}"
+
+
+- name: Adding authentication keys.
+  authorized_key: 
+    user: "{{ item.0.name }}"
+    key: "{{ item.1 }}"
+    state: present
+  with_subelements:
+    - "{{ users }}"
+    - authorized
