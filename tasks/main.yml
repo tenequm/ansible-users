@@ -1,13 +1,13 @@
 ---
 - name: Adding groups.
-  group: 
+  group:
     name: "{{ item.name }}"
     state: present
   with_items:
     - "{{ users }}"
 
 - name: Adding users.
-  user: 
+  user:
     name: "{{ item.name }}"
     state: "{{ item.state | default('present') }}"
     createhome: "{{ item.createhome | default('yes') }}"
@@ -19,7 +19,7 @@
 
 
 - name: Adding authentication keys.
-  authorized_key: 
+  authorized_key:
     user: "{{ item.0.name }}"
     key: "{{ item.1 }}"
     state: present
