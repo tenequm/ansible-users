@@ -81,4 +81,4 @@ MIT
 Author Information
 ------------------
 
-This role was created in 2017 by [Mykhaylo Kolesnik](http://github.com/1nfinitum)]
+This role was created in 2017 by [Mykhaylo Kolesnik](http://github.com/1nfinitum)
