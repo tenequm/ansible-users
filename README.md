@@ -10,7 +10,7 @@ This role requires only root access for accomplishing its operations, so either 
 ```
 - hosts: localhost
   roles:
-    - role: 1nfinitum.ansible-users
+    - role: 1nfinitum.users
 ```
 
 Role Variables
@@ -28,7 +28,7 @@ users: []
 groups_to_add: []
 authorized_keys: []
 ```
-These variables encapsulate all the [user](http://docs.ansible.com/ansible/user_module.html)], [group](http://docs.ansible.com/ansible/group_module.html)] and [authorized_key](http://docs.ansible.com/ansible/authorized_key_module.html) Ansible Modules functionality and adds additional parameter for `users` and `authorized_key` lists:
+These variables encapsulate all the [user](http://docs.ansible.com/ansible/user_module.html), [group](http://docs.ansible.com/ansible/group_module.html) and [authorized_key](http://docs.ansible.com/ansible/authorized_key_module.html) Ansible Modules functionality and adds additional parameter for `users` and `authorized_key` lists:
 ```
 ssh_pub_key: []
 ```
@@ -49,7 +49,7 @@ Example Playbook
   vars_files:
     - vars/main.yml
   roles:
-    - { role: 1nfinitum.ansible-users }
+    - { role: 1nfinitum.users }
 ```
 Inside `vars/main.yml`:
 ```
@@ -81,4 +81,4 @@ MIT
 Author Information
 ------------------
 
-This role was created in 2017 by [Mykhaylo Kolesnik](http://github.com/1nfinitum)
+This role was created in 2017 by [Mykhaylo Kolesnik](http://github.com/1nfinitum).
