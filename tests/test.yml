@@ -103,10 +103,11 @@
   hosts: localhost
   remote_user: root
   gather_facts: False
-  groups_to_add:
+  vars:
+    groups_to_add:
       - name: some_group4
         state: absent
-  vars:
+    users:
       - user: user3
         state: absent
       - user: user4
