@@ -6,12 +6,16 @@
     state: "{{ item.state | default('present') }}"
     system: "{{ item.system | default(omit) }}"
   with_items: "{{ groups_to_add + [default_users_group] }}"
+  loop_control:
+    label: "{{ item.name }}"
 
-- name: Adding groups per users if 'user_has_own_group' or 'group' is defined.
+- name: Adding `group` if it is defined for user.
   group:
     name: "{{ item.user if item.group is not defined else item.group}}"
-  when: "'user_has_own_group' in item or 'group' in item"
+  when: "'group' in item"
   with_items: "{{ users }}"
+  loop_control:
+    label: "{{ item.group|default('None') }}"
 
 - name: Adding users.
   user:
@@ -43,12 +47,8 @@
     update_password: "{{ item.update_password | default('always') }}"
   with_items:
     - "{{ users }}"
-
-- debug: msg="user={{ item.0.user }} key={{ item.1 }}"
-  with_subelements:
-    - "{{ users + authorized_keys }}"
-    - ssh_pub_key
-    - skip_missing: yes
+  loop_control:
+    label: "{{ item.user }}"
 
 - name: Adding authentication keys.
   authorized_key:
@@ -57,7 +57,7 @@
     key_options: "{{ item.key_options | default(omit) }}"
     manage_dir: "{{ item.manage_dir | default(omit) }}"
     path: "{{ item.path | default(omit) }}"
-    state: "{{ item.state | default('present') }}"
+    state: "{{ item.0.state | default('present') }}"
     user: "{{ item.0.user }}"
     validate_certs: "{{ item.validate_certs | default(omit) }}"
   when: "{{ item.1 is defined }}"
@@ -65,3 +65,5 @@
     - "{{ users + authorized_keys }}"
     - ssh_pub_key
     - skip_missing: yes
+  loop_control:
+    label: "{{ item.0.user }}"
