@@ -28,7 +28,7 @@ script:
   # Running role again to ensure its idempotence.
   - >
     ansible-playbook --connection=local --sudo tests/test.yml
-    | grep -q 'changed=2.*failed=0'
+    | grep -q 'changed=7.*failed=0'
     && (echo 'Idempotence test: pass' && exit 0)
     || (echo 'Idempotence test: fail' && exit 1)
 
