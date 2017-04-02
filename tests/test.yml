@@ -103,7 +103,7 @@
   hosts: localhost
   remote_user: root
   gather_facts: False
-  group:
+  groups_to_add:
       - name: some_group4
         state: absent
   vars:
