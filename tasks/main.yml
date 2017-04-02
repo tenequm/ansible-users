@@ -1,28 +1,67 @@
 ---
 - name: Adding groups.
   group:
+    gid: "{{ item.gid | default(omit) }}"
     name: "{{ item.name }}"
-    state: present
-  with_items:
-    - "{{ users }}"
+    state: "{{ item.state | default('present') }}"
+    system: "{{ item.system | default(omit) }}"
+  with_items: "{{ groups_to_add + [default_users_group] }}"
+
+- name: Adding groups per users if 'user_has_own_group' or 'group' is defined.
+  group:
+    name: "{{ item.user if item.group is not defined else item.group}}"
+  when: "'user_has_own_group' in item or 'group' in item"
+  with_items: "{{ users }}"
 
 - name: Adding users.
   user:
-    name: "{{ item.name }}"
-    state: "{{ item.state | default('present') }}"
+    append: "{{ item.append | default('no') }}"
+    comment: "{{ item.comment | default(omit) }}"
     createhome: "{{ item.createhome | default('yes') }}"
-    shell: "{{ item.shell | default('/bin/bash') }}"
-    group: "{{ item.name }}"
+    expires: "{{ item.expires | default(omit) }}"
+    force: "{{ item.force | default('no') }}"
+    generate_ssh_key: "{{ item.generate_ssh_key | default('no') }}"
+    group: "{{ item.group | default(default_users_group.name) }}"
+    groups: "{{ item.groups | default(omit) }}"
+    home: "{{ item.home | default(omit) }}"
+    login_class: "{{ item.login_class | default(omit) }}"
+    move_home: "{{ item.move_home | default('no') }}"
+    name: "{{ item.user }}"
+    non_unique: "{{ item.non_unique | default('no') }}"
     password: "{{ item.password | default(omit) }}"
+    remove: "{{ item.remove | default('no') }}"
+    seuser: "{{ item.seuser | default(omit) }}"
+    shell: "{{ item.shell | default('/bin/bash') }}"
+    skeleton: "{{ item.skeleton|default(omit) if item.createhome is not defined or item.createhome == 'yes' else omit }}"
+    ssh_key_bits: "{{ item.ssh_key_bits | default(omit) }}"
+    ssh_key_file: "{{ item.ssh_key_file | default(omit) }}"
+    ssh_key_passphrase: "{{ item.ssh_key_passphrase | default(omit) }}"
+    ssh_key_type: "{{ item.ssh_key_type | default(omit) }}"
+    state: "{{ item.state | default('present') }}"
+    system: "{{ item.system | default('no') }}"
+    uid: "{{ item.uid | default(omit) }}"
+    update_password: "{{ item.update_password | default('always') }}"
   with_items:
     - "{{ users }}"
 
+- debug: msg="user={{ item.0.user }} key={{ item.1 }}"
+  with_subelements:
+    - "{{ users + authorized_keys }}"
+    - ssh_pub_key
+    - skip_missing: yes
 
 - name: Adding authentication keys.
   authorized_key:
-    user: "{{ item.0.name }}"
+    exclusive: "{{ item.exclusive | default(omit) }}"
     key: "{{ item.1 }}"
-    state: present
+    key_options: "{{ item.key_options | default(omit) }}"
+    manage_dir: "{{ item.manage_dir | default(omit) }}"
+    path: "{{ item.path | default(omit) }}"
+    state: "{{ item.state | default('present') }}"
+    user: "{{ item.0.user }}"
+    validate_certs: "{{ item.validate_certs | default(omit) }}"
+  when: "{{ item.1 is defined }}"
   with_subelements:
-    - "{{ users }}"
-    - authorized
+    - "{{ users + authorized_keys }}"
+    - ssh_pub_key
+    - skip_missing: yes
