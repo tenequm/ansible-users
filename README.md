@@ -73,9 +73,9 @@ ssh_use_dns: "no"
 ```
 Security settings for SSH authentication. It's best to leave these set to "no", but there are times (especially during initial server configuration or when you don't have key-based authentication in place) when one or all may be safely set to 'yes'.
 ```
-fail2ban_enabled: true
+fail2ban_enabled: false
 ```
-Wether to install/enable fail2ban. You might not want to use fail2ban if you're already using some other service for login and intrusion detection.
+Wether to install/enable fail2ban. By default it's turned off, to enable set it to `true`, note that it will work only on Debian type machine, while it uses `apt` package for installation. You might not want to use fail2ban if you're already using some other service for login and intrusion detection.
 
 Example Playbook
 ----------------
