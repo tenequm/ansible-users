@@ -45,7 +45,7 @@
         groups: users
         user: user5
   roles:
-    - ansible-users
+    - ansible-ssh-users
 
 - name: Testing ability to add SSH public keys to existing user.
   hosts: localhost
@@ -62,7 +62,7 @@
           - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDhuAIKWA4/BTZ0lRqp67Nix9QvpWlVm57xoQoHVHLxs2utK2SCtyrF1bSPFpdTP9imOTkPWHP1h1D+hAIWpsy1khg4yxEnHMgMhUjixEDA48c5+aRkozHsh/n3UVZnuaCOv+YoXMgL23fSM3sMN0LbVf5yaoiXHNzOybYvMad0BtGm/IruWuFFpwc1UC513riw3LVx4gzNwVygoQ/iEqmXvWTlFO33EZXgrhNGtODaZIKVRZH+fey/NSiYHR7rl2ebPgYbby+Ol3iVWkkz75uxbmYw/xFSowSakysmO7Kw+E7qbVySdAe9Xz6kFJV1d+r+Mx11niiOlSZ9061cvs9j mykhaylokolesnik@Air-Mykhaylo"
           - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC3G7bc+MXs4ISjHiuLXVeazssEIjktpzydTk6dU6YcTLUlgDFbao6jFPuyJFg8qguqyrfkhtjU1Xg1ew+kSXcGH1bNCHxgBRw4G10NnzMA/j9EvCUKZ0TSeft7b/BdMTdAVfQEkX/9HOhgkvI9f9gwiIPT+ejGibiMRE/c1vsW2Ydp41FU5VvnhxmMB4VAytH/nyTjSsyK92Jsus9MXWFeh++nuHPrSWh8ALktX107MtF/l/meOqNXHbglLAV2hJJtP0GvzOkEwx5cSdiQEDACeV/BTvEArtTPAyhFxjD2WezA6Wt33D+yjSxeelac71apltPIuaYy74Pf1WJWlRzT mykhaylokolesnik@Air-Mykhaylo"
   roles:
-    - ansible-users
+    - ansible-ssh-users
 
 - name: Test if it deletes multiple users, groups and SSH keys.
   hosts: localhost
@@ -89,4 +89,4 @@
           - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDhuAIKWA4/BTZ0lRqp67Nix9QvpWlVm57xoQoHVHLxs2utK2SCtyrF1bSPFpdTP9imOTkPWHP1h1D+hAIWpsy1khg4yxEnHMgMhUjixEDA48c5+aRkozHsh/n3UVZnuaCOv+YoXMgL23fSM3sMN0LbVf5yaoiXHNzOybYvMad0BtGm/IruWuFFpwc1UC513riw3LVx4gzNwVygoQ/iEqmXvWTlFO33EZXgrhNGtODaZIKVRZH+fey/NSiYHR7rl2ebPgYbby+Ol3iVWkkz75uxbmYw/xFSowSakysmO7Kw+E7qbVySdAe9Xz6kFJV1d+r+Mx11niiOlSZ9061cvs9j mykhaylokolesnik@Air-Mykhaylo"
 
   roles:
-    - ansible-users
+    - ansible-ssh-users
