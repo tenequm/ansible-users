@@ -4,6 +4,8 @@
   remote_user: root
   gather_facts: False
   vars:
+    enable_ssh_config: true
+
     groups_to_add:
       - name: some_group
         gid: 1100

@@ -67,3 +67,53 @@
     - skip_missing: yes
   loop_control:
     label: "{{ item.0.user }}"
+
+- name: Add configured user accounts to passwordless sudoers.
+  lineinfile:
+    dest: /etc/sudoers
+    regexp: '^{{ item }}'
+    line: "{{ item }} ALL=(ALL) NOPASSWD: ALL"
+    state: present
+    validate: 'visudo -cf %s'
+  with_items: "{{ passwordless_sudoers }}"
+  when: passwordless_sudoers | length > 0
+
+- name: Add configured user accounts to passworded sudoers.
+  lineinfile:
+    dest: /etc/sudoers
+    regexp: '^{{ item }}'
+    line: "{{ item }} ALL=(ALL) ALL"
+    state: present
+    validate: 'visudo -cf %s'
+  with_items: "{{ passworded_sudoers }}"
+  when: passworded_sudoers | length > 0
+
+- name: Update SSH configuration to be more secure.
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+  with_items:
+    - regexp: "^PasswordAuthentication"
+      line: "PasswordAuthentication {{ ssh_password_authentication }}"
+    - regexp: "^PermitRootLogin"
+      line: "PermitRootLogin {{ ssh_permit_root_login }}"
+    - regexp: "^Port"
+      line: "Port {{ ssh_port }}"
+    - regexp: "^UseDNS"
+      line: "UseDNS {{ ssh_use_dns }}"
+    - regexp: "^PermitEmptyPasswords"
+      line: "PermitEmptyPasswords {{ ssh_permit_empty_password }}"
+    - regexp: "^ChallengeResponseAuthentication"
+      line: "ChallengeResponseAuthentication {{ ssh_challenge_response_auth }}"
+    - regexp: "^GSSAPIAuthentication"
+      line: "GSSAPIAuthentication {{ ssh_gss_api_authentication }}"
+    - regexp: "^X11Forwarding"
+      line: "X11Forwarding {{ ssh_x11_forwarding }}"
+  when: enable_ssh_config
+  notify: restart ssh
+
+- name: Install fail2ban.
+  apt: name=fail2ban state=present
+  when: fail2ban_enabled

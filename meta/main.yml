@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: Mykhaylo Kolesnik
-  description: Role for user creation.
+  description: Role for user related SSH configurations.
   license: MIT
 
   min_ansible_version: 2.2
@@ -9,6 +9,6 @@ galaxy_info:
   platforms:
     - name: Ubuntu
       versions:
-      - all
+      - xenial
   galaxy_tags:
     - system
