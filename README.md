@@ -85,7 +85,7 @@ Example Playbook
   vars_files:
     - vars/main.yml
   roles:
-    - { role: 1nfinitum.users }
+    - { role: 1nfinitum.ssh-users }
 ```
 Inside `vars/main.yml`:
 ```
