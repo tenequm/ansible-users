@@ -18,4 +18,4 @@ ssh_permit_empty_password: "no"
 ssh_challenge_response_auth: "no"
 ssh_gss_api_authentication: "no"
 ssh_x11_forwarding: "no"
-fail2ban_enabled: true
+fail2ban_enabled: false
