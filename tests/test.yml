@@ -14,6 +14,12 @@
         gid: 1200
       - name: some_group5
 
+    passwordless_sudoers:
+      - user2
+
+    passworded_sudoers:
+      - user1
+
     users:
       - group: deploy
         groups: users
