@@ -1,6 +1,6 @@
 ansible-ssh-users
 =========
-[![Build Status](https://travis-ci.org/1nfinitum/ansible-users.svg?branch=master)](https://travis-ci.org/1nfinitum/ansible-users)
+[![Build Status](https://travis-ci.org/1nfinitum/ansible-ssh-users.svg?branch=master)](https://travis-ci.org/1nfinitum/ansible-ssh-users)
 
 Role for managing users, groups, authorized ssh keys and basic SSH security configs.
 
