@@ -60,7 +60,7 @@
     state: "{{ item.0.state | default('present') }}"
     user: "{{ item.0.user }}"
     validate_certs: "{{ item.validate_certs | default(omit) }}"
-  when: "{{ item.1 is defined }}"
+  when: item.1 is defined
   with_subelements:
     - "{{ users + authorized_keys }}"
     - ssh_pub_key
