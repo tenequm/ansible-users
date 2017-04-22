@@ -1,4 +1,4 @@
-ansible-ssh-users
+Ansible Role: Users
 =========
 [![Build Status](https://travis-ci.org/1nfinitum/ansible-ssh-users.svg?branch=master)](https://travis-ci.org/1nfinitum/ansible-ssh-users)
 
