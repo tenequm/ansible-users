@@ -1,7 +1,6 @@
----
 galaxy_info:
   author: Mykhaylo Kolesnik
-  description: Role for user related SSH configurations.
+  description: Role for user/group creation.
   license: MIT
 
   min_ansible_version: 2.2

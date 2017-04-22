@@ -4,89 +4,22 @@
   remote_user: root
   gather_facts: False
   vars:
-    enable_ssh_config: true
-
-    groups_to_add:
-      - name: some_group
-        gid: 1100
-      - name: some_group2
-      - name: some_group4
-        gid: 1200
-      - name: some_group5
-
-    passwordless_sudoers:
-      - user2
-
-    passworded_sudoers:
-      - user1
-
-    users:
+    users_add_group:
+      - name: newgroup
+    users_add:
       - group: deploy
         groups: users
         user: user1
         password: $6$rounds=656000$49G.PQKkbGk2ngY1$BUDsC3aQf3XXPpsU8.JPP94URmiYF21fbYdxU/K8G0iJstvc3EEVmrFW5K51b7q4J.qgliRV16O5tpMSjuXhY1
-        uid: 1100
+        sudoer: true
         state: present
         ssh_pub_key:
           - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDN43dn7fgS1LH4dCJt3NK2DIG82rYelEPGOcG8xU2WkRL9LjCZb42JIi1fSbvHPIgZXxWc2w01h2fYVBwyHXDU+7mLNMc3ZpcKCVW3hoAb7AVA/WwaBgrtBLmuU1M2eM+d//ih5kDnAS58ZmcUg8JYxvqc4tJyFQh969lGQ+UQab/BPVvoAP9ntPSk89qOYrm04l1uIxVayQT+taYXG37akp4nAaGsGF4Si/kRVzhjAgP/VuJvq4y3STUIIi4pmjhSQX4fyULQNY58aaYW4AXoGFb2S6xKX4oxCRuyhFaJdPtNCTGGyYTISkrevpSWlZSbdYOxijLZTaFNg7h+ngIV mykhaylokolesnik@Air-Mykhaylo"
-      - groups: users
-        user: user2
-        password: $6$rounds=656000$49G.PQKkbGk2ngY1$BUDsC3aQf3XXPpsU8.JPP94URmiYF21fbYdxU/K8G0iJstvc3EEVmrFW5K51b7q4J.qgliRV16O5tpMSjuXhY1
-        state: present
-      - groups: users
-        user: user3
-      - group: deploy
-        groups: users
-        user: user4
-        password: $6$rounds=656000$49G.PQKkbGk2ngY1$BUDsC3aQf3XXPpsU8.JPP94URmiYF21fbYdxU/K8G0iJstvc3EEVmrFW5K51b7q4J.qgliRV16O5tpMSjuXhY1
-        ssh_pub_key:
-          - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDN43dn7fgS1LH4dCJt3NK2DIG82rYelEPGOcG8xU2WkRL9LjCZb42JIi1fSbvHPIgZXxWc2w01h2fYVBwyHXDU+7mLNMc3ZpcKCVW3hoAb7AVA/WwaBgrtBLmuU1M2eM+d//ih5kDnAS58ZmcUg8JYxvqc4tJyFQh969lGQ+UQab/BPVvoAP9ntPSk89qOYrm04l1uIxVayQT+taYXG37akp4nAaGsGF4Si/kRVzhjAgP/VuJvq4y3STUIIi4pmjhSQX4fyULQNY58aaYW4AXoGFb2S6xKX4oxCRuyhFaJdPtNCTGGyYTISkrevpSWlZSbdYOxijLZTaFNg7h+ngIV mykhaylokolesnik@Air-Mykhaylo"
-      - group: deploy
-        groups: users
-        user: user5
-  roles:
-    - role_under_test
-
-- name: Testing ability to add SSH public keys to existing user.
-  hosts: localhost
-  remote_user: root
-  gather_facts: False
-  vars:
-    authorized_keys:
-      - user: user1
-        ssh_pub_key:
-          - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDhuAIKWA4/BTZ0lRqp67Nix9QvpWlVm57xoQoHVHLxs2utK2SCtyrF1bSPFpdTP9imOTkPWHP1h1D+hAIWpsy1khg4yxEnHMgMhUjixEDA48c5+aRkozHsh/n3UVZnuaCOv+YoXMgL23fSM3sMN0LbVf5yaoiXHNzOybYvMad0BtGm/IruWuFFpwc1UC513riw3LVx4gzNwVygoQ/iEqmXvWTlFO33EZXgrhNGtODaZIKVRZH+fey/NSiYHR7rl2ebPgYbby+Ol3iVWkkz75uxbmYw/xFSowSakysmO7Kw+E7qbVySdAe9Xz6kFJV1d+r+Mx11niiOlSZ9061cvs9j mykhaylokolesnik@Air-Mykhaylo"
-          - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC3G7bc+MXs4ISjHiuLXVeazssEIjktpzydTk6dU6YcTLUlgDFbao6jFPuyJFg8qguqyrfkhtjU1Xg1ew+kSXcGH1bNCHxgBRw4G10NnzMA/j9EvCUKZ0TSeft7b/BdMTdAVfQEkX/9HOhgkvI9f9gwiIPT+ejGibiMRE/c1vsW2Ydp41FU5VvnhxmMB4VAytH/nyTjSsyK92Jsus9MXWFeh++nuHPrSWh8ALktX107MtF/l/meOqNXHbglLAV2hJJtP0GvzOkEwx5cSdiQEDACeV/BTvEArtTPAyhFxjD2WezA6Wt33D+yjSxeelac71apltPIuaYy74Pf1WJWlRzT mykhaylokolesnik@Air-Mykhaylo"
       - user: user2
-        ssh_pub_key:
-          - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDhuAIKWA4/BTZ0lRqp67Nix9QvpWlVm57xoQoHVHLxs2utK2SCtyrF1bSPFpdTP9imOTkPWHP1h1D+hAIWpsy1khg4yxEnHMgMhUjixEDA48c5+aRkozHsh/n3UVZnuaCOv+YoXMgL23fSM3sMN0LbVf5yaoiXHNzOybYvMad0BtGm/IruWuFFpwc1UC513riw3LVx4gzNwVygoQ/iEqmXvWTlFO33EZXgrhNGtODaZIKVRZH+fey/NSiYHR7rl2ebPgYbby+Ol3iVWkkz75uxbmYw/xFSowSakysmO7Kw+E7qbVySdAe9Xz6kFJV1d+r+Mx11niiOlSZ9061cvs9j mykhaylokolesnik@Air-Mykhaylo"
-          - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC3G7bc+MXs4ISjHiuLXVeazssEIjktpzydTk6dU6YcTLUlgDFbao6jFPuyJFg8qguqyrfkhtjU1Xg1ew+kSXcGH1bNCHxgBRw4G10NnzMA/j9EvCUKZ0TSeft7b/BdMTdAVfQEkX/9HOhgkvI9f9gwiIPT+ejGibiMRE/c1vsW2Ydp41FU5VvnhxmMB4VAytH/nyTjSsyK92Jsus9MXWFeh++nuHPrSWh8ALktX107MtF/l/meOqNXHbglLAV2hJJtP0GvzOkEwx5cSdiQEDACeV/BTvEArtTPAyhFxjD2WezA6Wt33D+yjSxeelac71apltPIuaYy74Pf1WJWlRzT mykhaylokolesnik@Air-Mykhaylo"
-  roles:
-    - role_under_test
-
-- name: Test if it deletes multiple users, groups and SSH keys.
-  hosts: localhost
-  remote_user: root
-  gather_facts: False
-  vars:
-    groups_to_add:
-      - name: some_group4
-        state: absent
-      - name: some_group5
-        state: absent
-
-    users:
-      - user: user4
-        state: absent
-        remove: yes
-      - user: user5
-        state: absent
-
-    authorized_keys:
-      - user: user1
-        state: absent
-        ssh_pub_key:
-          - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDhuAIKWA4/BTZ0lRqp67Nix9QvpWlVm57xoQoHVHLxs2utK2SCtyrF1bSPFpdTP9imOTkPWHP1h1D+hAIWpsy1khg4yxEnHMgMhUjixEDA48c5+aRkozHsh/n3UVZnuaCOv+YoXMgL23fSM3sMN0LbVf5yaoiXHNzOybYvMad0BtGm/IruWuFFpwc1UC513riw3LVx4gzNwVygoQ/iEqmXvWTlFO33EZXgrhNGtODaZIKVRZH+fey/NSiYHR7rl2ebPgYbby+Ol3iVWkkz75uxbmYw/xFSowSakysmO7Kw+E7qbVySdAe9Xz6kFJV1d+r+Mx11niiOlSZ9061cvs9j mykhaylokolesnik@Air-Mykhaylo"
+        sudoer: passwordless
+        state: present
+      - groups: users,newgroup
+        user: user3
 
   roles:
     - role_under_test

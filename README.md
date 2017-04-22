@@ -2,80 +2,66 @@ ansible-ssh-users
 =========
 [![Build Status](https://travis-ci.org/1nfinitum/ansible-ssh-users.svg?branch=master)](https://travis-ci.org/1nfinitum/ansible-ssh-users)
 
-Role for managing users, groups, authorized ssh keys and basic SSH security configs.
+Role for managing users, groups and authorized ssh keys.
 
 Requirements
 ------------
 This role requires only root access for accomplishing its operations, so either run it in a playbook with a global `become: yes`, or invoke the role in your playbook like:
 ```
-- hosts: localhost
-  roles:
-    - role: 1nfinitum.ssh-users
+    - hosts: localhost
+      become: yes
+      roles:
+        - role: 1nfinitum.users
 ```
-
 Role Variables
 --------------
-
-Available variables are listed below, along with default values (see defaults/main.yml):
+Variable to add users:
 ```
-default_users_group: {name: users} 
-default_user_shell: /bin/bash
+users_add: [] # List
 ```
-Here is defined default group in which would be added users if you wouldn't define `group` parameter for user and default Shell for users.
-
+It has a form of list and encapsulates all the [user](http://docs.ansible.com/ansible/user_module.html) Ansible Module functionality. If the group mentioned in `group` parameter doesn't exist - it will create it before adding user. When adding groups to `groups` parameter be sure that those groups exist, if not - use `users_add_group` variable to add them in the same play as creating user, it will be explained below.
+If you are going to add password, use this [instruction](http://docs.ansible.com/ansible/faq.html#how-do-i-generate-crypted-passwords-for-the-user-module), cause it only takes encrypted values of the password. It also has some additional parameters:
 ```
-users: []
-authorized_keys: []
+ssh_pub_key: [] # List
+sudoer: '' # String
 ```
-These variables encapsulate all the [user](http://docs.ansible.com/ansible/user_module.html) and [authorized_key](http://docs.ansible.com/ansible/authorized_key_module.html) Ansible Modules functionality and adds additional parameter:
-```
-ssh_pub_key: []
-```
-This variable takes a list of public SSH keys as a string or as a an url like `https://github.com/username.keys` and adds it to user's `authorized_keys` file related to its account. Note that while `authorized_keys` parameter you should put SSH keys also into `ssh_pub_key` list. For example:
+`ssh_pub_key` parameter takes a list of public SSH keys as a string or as a an url like `https://github.com/username.keys` and adds it to user's `authorized_keys` file related to its account.
+`sudoer` parameter lets you decide whether user to be in `sudoers` file or not(what lets you accomplish `sudo` command). It's `true` and `false` values and, by default, will add user as *Passworded sudoer*. In case you want user to be *Passwordless sudoer* set its value to `passwordless`.
 ```
 users:
   - user: abc
-    password: $6$rounds=656000$49G.PQKkbGk2ngY1$BUDsC3aQf3XXPpsU8.JPP94URmiYF21fbYdxU/K8G0iJstvc3EEVmrFW5K51b7q4J.qgliRV16O5tpMSjuXhY1
-    shell: /bin/bash
-    createhome: yes
-    state: present
+    sudoers: passwordless # Set it to `true` to achieve passworded sudoer.
     ssh_pub_key:
-      - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDN43dn7fgS1LH4dCJt3NK2DIG82rYelEPGOcG8xU2WkRL9LjCZb42JIi1fSbvHPIgZXxWc2w01h2fYVBwyHXDU+7mLNMc3ZpcKCVW3hoAb7AVA/WwaBgrtBLmuU1M2eM+d//ih5kDnAS58ZmcUg8JYxvqc4tJyFQh969lGQ+UQab/BPVvoAP9ntPSk89qOYrm04l1uIxVayQT+taYXG37akp4nAaGsGF4Si/kRVzhjAgP/VuJvq4y3STUIIi4pmjhSQX4fyULQNY58aaYW4AXoGFb2S6xKX4oxCRuyhFaJdPtNCTGGyYTISkrevpSWlZSbdYOxijLZTaFNg7h+ngIV mykhaylokolesnik@Air-Mykhaylo"
-
-authorized_keys:
-  - user: abc # Name of user to assign key for. Required.
-    state: present # Default is present.
-    ssh_pub_key:
-      - key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDN43dn7fgS1LH4dCJt3NK2DIG82rYelEPGOcG8xU2WkRL9LjCZb42JIi1fSbvHPIgZXxWc2w01h2fYVBwyHXDU+7mLNMc3ZpcKCVW3hoAb7AVA/WwaBgrtBLmuU1M2eM+d//ih5kDnAS58ZmcUg8JYxvqc4tJyFQh969lGQ+UQab/BPVvoAP9ntPSk89qOYrm04l1uIxVayQT+taYXG37akp4nAaGsGF4Si/kRVzhjAgP/VuJvq4y3STUIIi4pmjhSQX4fyULQNY58aaYW4AXoGFb2S6xKX4oxCRuyhFaJdPtNCTGGyYTISkrevpSWlZSbdYOxijLZTaFNg7h+ngIV mykhaylokolesnik@Air-Mykhaylo" # SSH public key as a string or as url.
+      - "your SSH key" # SSH public key as a string or as url.
 ```
-`groups_to_add` variable encapsulates [group](http://docs.ansible.com/ansible/group_module.html) Ansible Module functionality, example usage:
+Variable for creation/removal of groups:
 ```
-groups_to_add:
+users_add_group: [] # List
+```
+It encapsulates all the [group](http://docs.ansible.com/ansible/group_module.html) Ansible Module functionality:
+```
+users_add_group:
   - name: abc # Name of group. Required.
     state: absent # Default is 'present'
 ```
-To let some user be in `sudoers` file (meaning it will be able to accomplish `root` operations) next two variables, where you should define preferred users, can be used:
+Variable to add/remove authorized keys of user(s):
 ```
-passwordless_sudoers: [] # To define users, that will be able to accomplish `root` operations without obligation to write `sudo` before commands.
-passworded_sudoers: [] # To define users, that can obtain `root` operations using `sudo` command and their password.
+users_add_authorized_keys: [] # List
 ```
-NOTE that users without defined password cannot obtain `sudo` operations.
-
-The following variables are obtaining basic SSH security configurations to keep your server safer. By default these configurations is turned `off`, to prevent critical changes for existing servers, so if you want to use it - set `enable_ssh_config` to `true` in your `vars` or vars file you use.
+It encapsulates all the [authorized_key](http://docs.ansible.com/ansible/authorized_key_module.html) Ansible Module functionality:
 ```
-ssh_port: 22
+users_add_authorized_keys:
+  - user: abc # Name of user to assign key for. Required.
+    state: present # Default is `present`, can be set to `absent` for removal.
+    ssh_pub_key:
+      - key: "your SSH key" # SSH public key as a string or as url.
 ```
-The port through which you'd like SSH to be accessible. The default is port 22, but if you're operating a server on the open internet, and have no firewall blocking access to port 22, you'll quickly find that thousands of login attempts per day are not uncommon. You can change the port to a nonstandard port (e.g. 2849) if you want to avoid these thousands of automated penetration attempts.
+### Defaults
 ```
-ssh_password_authentication: "no"
-ssh_permit_root_login: "no"
-ssh_use_dns: "no"
+users_default_group: users 
+users_default_shell: /bin/bash
 ```
-Security settings for SSH authentication. It's best to leave these set to "no", but there are times (especially during initial server configuration or when you don't have key-based authentication in place) when one or all may be safely set to 'yes'.
-```
-fail2ban_enabled: false
-```
-Wether to install/enable fail2ban. By default it's turned off, to enable set it to `true`, note that it will work only on Debian type machine, while it uses `apt` package for installation. You might not want to use fail2ban if you're already using some other service for login and intrusion detection.
+This is defined default group in which user would be added if you wouldn't define `group` parameter and default Shell.
 
 Example Playbook
 ----------------
@@ -85,30 +71,23 @@ Example Playbook
   vars_files:
     - vars/main.yml
   roles:
-    - { role: 1nfinitum.ssh-users }
+    - 1nfinitum.users
 ```
 Inside `vars/main.yml`:
 ```
-users:
+users_add:
   - user: abc
     password: $6$rounds=656000$49G.PQKkbGk2ngY1$BUDsC3aQf3XXPpsU8.JPP94URmiYF21fbYdxU/K8G0iJstvc3EEVmrFW5K51b7q4J.qgliRV16O5tpMSjuXhY1
-    shell: /bin/bash
-    createhome: yes
-    state: present
+    sudoer: true
     ssh_pub_key:
       - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDN43dn7fgS1LH4dCJt3NK2DIG82rYelEPGOcG8xU2WkRL9LjCZb42JIi1fSbvHPIgZXxWc2w01h2fYVBwyHXDU+7mLNMc3ZpcKCVW3hoAb7AVA/WwaBgrtBLmuU1M2eM+d//ih5kDnAS58ZmcUg8JYxvqc4tJyFQh969lGQ+UQab/BPVvoAP9ntPSk89qOYrm04l1uIxVayQT+taYXG37akp4nAaGsGF4Si/kRVzhjAgP/VuJvq4y3STUIIi4pmjhSQX4fyULQNY58aaYW4AXoGFb2S6xKX4oxCRuyhFaJdPtNCTGGyYTISkrevpSWlZSbdYOxijLZTaFNg7h+ngIV mykhaylokolesnik@Air-Mykhaylo"
-
-groups_to_add:
-  - name: abc # Name of group. Required.
-    state: absent # Default is 'present'
-    
-authorized_keys:
+      -
+users_add_authorized_keys:
   - user: abc # Name of user to assign key for. Required.
     state: present # Default is present.
     ssh_pub_key:
-      - key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDN43dn7fgS1LH4dCJt3NK2DIG82rYelEPGOcG8xU2WkRL9LjCZb42JIi1fSbvHPIgZXxWc2w01h2fYVBwyHXDU+7mLNMc3ZpcKCVW3hoAb7AVA/WwaBgrtBLmuU1M2eM+d//ih5kDnAS58ZmcUg8JYxvqc4tJyFQh969lGQ+UQab/BPVvoAP9ntPSk89qOYrm04l1uIxVayQT+taYXG37akp4nAaGsGF4Si/kRVzhjAgP/VuJvq4y3STUIIi4pmjhSQX4fyULQNY58aaYW4AXoGFb2S6xKX4oxCRuyhFaJdPtNCTGGyYTISkrevpSWlZSbdYOxijLZTaFNg7h+ngIV mykhaylokolesnik@Air-Mykhaylo" # SSH public key as a string or as url.
+      - key: "your public SSH key" # SSH public key as a string or as url.
 ```
-
 License
 -------
 

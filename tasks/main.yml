@@ -5,64 +5,63 @@
     name: "{{ item.name }}"
     state: "{{ item.state | default('present') }}"
     system: "{{ item.system | default(omit) }}"
-  with_items: "{{ groups_to_add + [default_users_group] }}"
-  loop_control:
-    label: "{{ item.name }}"
+  when: users_add_group is defined
+  with_items: "{{ users_add_group }}"
 
-- name: Adding `group` if it is defined for user.
+- name: Ensuring primary group existence.
   group:
-    name: "{{ item.user if item.group is not defined else item.group}}"
-  when: "'group' in item"
-  with_items: "{{ users }}"
+    name: "{{ item.group|d(users_default_group) }}"
+  when: users_add is defined
+  with_items: "{{ users_add }}"
   loop_control:
-    label: "{{ item.group|default('None') }}"
+    label: "{{ item.group|d(none) }}"
 
 - name: Adding users.
   user:
-    append: "{{ item.append | default('no') }}"
-    comment: "{{ item.comment | default(omit) }}"
-    createhome: "{{ item.createhome | default('yes') }}"
-    expires: "{{ item.expires | default(omit) }}"
-    force: "{{ item.force | default('no') }}"
-    generate_ssh_key: "{{ item.generate_ssh_key | default('no') }}"
-    group: "{{ item.group | default(default_users_group.name) }}"
-    groups: "{{ item.groups | default(omit) }}"
-    home: "{{ item.home | default(omit) }}"
-    login_class: "{{ item.login_class | default(omit) }}"
-    move_home: "{{ item.move_home | default('no') }}"
+    append: "{{ item.append | d(omit) }}"
+    comment: "{{ item.comment | d(omit) }}"
+    createhome: "{{ item.createhome | d(omit) }}"
+    expires: "{{ item.expires | d(omit) }}"
+    force: "{{ item.force | d(omit) }}"
+    generate_ssh_key: "{{ item.generate_ssh_key | d(omit) }}"
+    group: "{{ item.group | d(users_default_group) }}"
+    groups: "{{ item.groups | d(omit) }}"
+    home: "{{ item.home | d(omit) }}"
+    login_class: "{{ item.login_class | d(omit) }}"
+    move_home: "{{ item.move_home | d(omit) }}"
     name: "{{ item.user }}"
-    non_unique: "{{ item.non_unique | default('no') }}"
-    password: "{{ item.password | default(omit) }}"
-    remove: "{{ item.remove | default('no') }}"
-    seuser: "{{ item.seuser | default(omit) }}"
-    shell: "{{ item.shell | default('/bin/bash') }}"
+    non_unique: "{{ item.non_unique | d(omit) }}"
+    password: "{{ item.password | d(omit) }}"
+    remove: "{{ item.remove | d(omit) }}"
+    seuser: "{{ item.seuser | d(omit) }}"
+    shell: "{{ item.shell | d(users_default_shell) }}"
     skeleton: "{{ item.skeleton|default(omit) if item.createhome is not defined or item.createhome == 'yes' else omit }}"
-    ssh_key_bits: "{{ item.ssh_key_bits | default(omit) }}"
-    ssh_key_file: "{{ item.ssh_key_file | default(omit) }}"
-    ssh_key_passphrase: "{{ item.ssh_key_passphrase | default(omit) }}"
-    ssh_key_type: "{{ item.ssh_key_type | default(omit) }}"
-    state: "{{ item.state | default('present') }}"
-    system: "{{ item.system | default('no') }}"
-    uid: "{{ item.uid | default(omit) }}"
-    update_password: "{{ item.update_password | default('always') }}"
+    ssh_key_bits: "{{ item.ssh_key_bits | d(omit) }}"
+    ssh_key_file: "{{ item.ssh_key_file | d(omit) }}"
+    ssh_key_passphrase: "{{ item.ssh_key_passphrase | d(omit) }}"
+    ssh_key_type: "{{ item.ssh_key_type | d(omit) }}"
+    state: "{{ item.state | d(omit) }}"
+    system: "{{ item.system | d(omit) }}"
+    uid: "{{ item.uid | d(omit) }}"
+    update_password: "{{ item.update_password | d(omit) }}"
+  when: users_add is defined
   with_items:
-    - "{{ users }}"
+    - "{{ users_add }}"
   loop_control:
     label: "{{ item.user }}"
 
 - name: Adding authentication keys.
   authorized_key:
-    exclusive: "{{ item.exclusive | default(omit) }}"
+    exclusive: "{{ item.exclusive | d(omit) }}"
     key: "{{ item.1 }}"
-    key_options: "{{ item.key_options | default(omit) }}"
-    manage_dir: "{{ item.manage_dir | default(omit) }}"
-    path: "{{ item.path | default(omit) }}"
-    state: "{{ item.0.state | default('present') }}"
+    key_options: "{{ item.key_options | d(omit) }}"
+    manage_dir: "{{ item.manage_dir | d(omit) }}"
+    path: "{{ item.path | d(omit) }}"
+    state: "{{ item.0.state | d(omit) }}"
     user: "{{ item.0.user }}"
-    validate_certs: "{{ item.validate_certs | default(omit) }}"
-  when: item.1 is defined
+    validate_certs: "{{ item.validate_certs | d(omit) }}"
   with_subelements:
-    - "{{ users + authorized_keys }}"
+    - "{{ users_add|d([]) + users_add_authorized_keys|d([]) }}"
     - ssh_pub_key
     - skip_missing: yes
   loop_control:
@@ -71,49 +70,12 @@
 - name: Add configured user accounts to passwordless sudoers.
   lineinfile:
     dest: /etc/sudoers
-    regexp: '^{{ item }}'
-    line: "{{ item }} ALL=(ALL) NOPASSWD: ALL"
+    regexp: '^{{ item.user }}'
+    line: "{{ item.user }} ALL=(ALL) {{ 'NOPASSWD: ' if item.sudoer == 'passwordless' else none }}ALL"
     state: present
     validate: 'visudo -cf %s'
-  with_items: "{{ passwordless_sudoers }}"
-  when: passwordless_sudoers | length > 0
-
-- name: Add configured user accounts to passworded sudoers.
-  lineinfile:
-    dest: /etc/sudoers
-    regexp: '^{{ item }}'
-    line: "{{ item }} ALL=(ALL) ALL"
-    state: present
-    validate: 'visudo -cf %s'
-  with_items: "{{ passworded_sudoers }}"
-  when: passworded_sudoers | length > 0
-
-- name: Update SSH configuration to be more secure.
-  lineinfile:
-    dest: /etc/ssh/sshd_config
-    regexp: "{{ item.regexp }}"
-    line: "{{ item.line }}"
-    state: present
-  with_items:
-    - regexp: "^PasswordAuthentication"
-      line: "PasswordAuthentication {{ ssh_password_authentication }}"
-    - regexp: "^PermitRootLogin"
-      line: "PermitRootLogin {{ ssh_permit_root_login }}"
-    - regexp: "^Port"
-      line: "Port {{ ssh_port }}"
-    - regexp: "^UseDNS"
-      line: "UseDNS {{ ssh_use_dns }}"
-    - regexp: "^PermitEmptyPasswords"
-      line: "PermitEmptyPasswords {{ ssh_permit_empty_password }}"
-    - regexp: "^ChallengeResponseAuthentication"
-      line: "ChallengeResponseAuthentication {{ ssh_challenge_response_auth }}"
-    - regexp: "^GSSAPIAuthentication"
-      line: "GSSAPIAuthentication {{ ssh_gss_api_authentication }}"
-    - regexp: "^X11Forwarding"
-      line: "X11Forwarding {{ ssh_x11_forwarding }}"
-  when: enable_ssh_config
-  notify: restart ssh
-
-- name: Install fail2ban.
-  apt: name=fail2ban state=present
-  when: fail2ban_enabled
+  with_items: "{{ users_add }}"
+  when:
+    - item is defined
+    - item.sudoer is defined
+    - item.sudoer == true or item.sudoer == "passwordless" or item.sudoer == "passworded"

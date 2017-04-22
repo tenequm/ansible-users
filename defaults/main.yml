@@ -1,21 +1,3 @@
 ---
-default_user_shell: /bin/bash
-default_users_group: {name: users}
-
-users: []
-authorized_keys: []
-groups_to_add: []
-
-passwordless_sudoers: []
-passworded_sudoers: []
-
-enable_ssh_config: false
-ssh_port: 22
-ssh_password_authentication: "no"
-ssh_permit_root_login: "no"
-ssh_use_dns: "no"
-ssh_permit_empty_password: "no"
-ssh_challenge_response_auth: "no"
-ssh_gss_api_authentication: "no"
-ssh_x11_forwarding: "no"
-fail2ban_enabled: false
+users_default_shell: /bin/bash
+users_default_group: users
