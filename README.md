@@ -30,7 +30,7 @@ sudoer: '' # String
 ```
 users:
   - user: abc
-    sudoers: passwordless # Set it to `true` to achieve passworded sudoer.
+    sudoer: passwordless # Set it to `true` to achieve passworded sudoer.
     ssh_pub_key:
       - "your SSH key" # SSH public key as a string or as url.
 ```
