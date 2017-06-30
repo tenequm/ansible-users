@@ -75,6 +75,8 @@
     state: present
     validate: 'visudo -cf %s'
   with_items: "{{ users_add }}"
+  loop_control:
+    label: "{{ item.user }}"
   when:
     - item is defined
     - item.sudoer is defined
