@@ -28,7 +28,7 @@ sudoer: '' # String
 `ssh_pub_key` parameter takes a list of public SSH keys as a string or as a an url like `https://github.com/username.keys` and adds it to user's `authorized_keys` file related to its account.
 `sudoer` parameter lets you decide whether user to be in `sudoers` file or not(what lets you accomplish `sudo` command). It's `true` and `false` values and, by default, will add user as *Passworded sudoer*. In case you want user to be *Passwordless sudoer* set its value to `passwordless`.
 ```
-users:
+users_add:
   - user: abc
     sudoer: passwordless # Set it to `true` to achieve passworded sudoer.
     ssh_pub_key:
